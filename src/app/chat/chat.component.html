@@ -27,10 +27,13 @@
       </div>
 
 
-
-      <input [(ngModel)]="message" (keyup)="$event.keyCode == 13 && sendMessage()" />
-      <button (click)="sendMessage(message)">Send</button>
-      <button (click)="  getTopic(myI)">getTopic</button>
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <button class="btn btn-outline-secondary" type="button" id="button-addon1" (click)="sendMessage(message)">Send</button>
+        </div>
+        <input type="text" class="form-control" placeholder="" aria-label="Example text with button addon"
+          aria-describedby="button-addon1" [(ngModel)]="message" (keyup)="$event.keyCode == 13 && sendMessage()">
+      </div>
 
     </div>
 
