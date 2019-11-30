@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ChatService } from './chat.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { webSocket } from 'rxjs/webSocket';
 
 @Component({
   selector: 'app-chat',
@@ -7,25 +9,66 @@ import { ChatService } from './chat.service';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-
+  subject = new WebSocket('ws://localhost:8000/ws/chat/1/');
   message: string;
   messages: string[] = [];
-
-  constructor(private chatService: ChatService) { }
+  myI: any;
+  token: any;
+  topic: any;
+  sendMessageUrl = 'http://localhost:8000/api/chat/message/create/';
+  getTopicUrl = 'http://127.0.0.1:8000/api/chat/';
+  myData: any;
+  constructor(public router: Router, private http: HttpClient, private route: ActivatedRoute) { }
 
   ngOnInit() {
-    console.log('chat loaded');
-    this.chatService
-      .getMessages()
-      .subscribe((message: string) => {
-        this.messages.push(message);
-      });
+    this.token = JSON.parse(localStorage.getItem('currentUser'));
+    this.myI = this.route.snapshot.paramMap.get('id');
+    this.getTopic(this.myI);
+    this.subject.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log(data);
+      this.messages.push(data.data.author.username + ': ' + data.data.message);
+      console.log(this.messages);
+      this.getTopic(this.myI);
+
+    };
+
   }
 
 
-  sendMessage() {
-    this.chatService.sendMessage(this.message);
-    this.message = '';
+  getTopic(chatId) {
+
+    const headers = new HttpHeaders()
+      .set('Authorization', 'Token ' + this.token);
+    this.http.get(this.getTopicUrl + chatId + '/', {
+      headers
+    })
+      .subscribe(data => {
+        console.log(data);
+
+        this.myData = data;
+        this.topic = this.myData.name;
+
+      });
+  }
+
+  sendMessage(myMessage: string) {
+    const myObject = {
+      message: myMessage,
+      chat: this.myI,
+    };
+    const headers = new HttpHeaders()
+      .set('Authorization', 'Token ' + this.token)
+    this.http.post(this.sendMessageUrl, myObject, {
+      headers
+    })
+      .subscribe(data => {
+        console.log(data);
+
+        this.myData = data;
+        this.getTopic(this.myI);
+      });
+
   }
 
 }

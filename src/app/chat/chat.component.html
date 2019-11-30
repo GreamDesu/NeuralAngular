@@ -1,6 +1,43 @@
-<div *ngFor="let message of messages">
-  {{message}}
-</div>
+<div class="container">
+  <div class="row">
+    <div class="col">
 
-<input [(ngModel)]="message" (keyup)="$event.keyCode == 13 && sendMessage()" />
-<button (click)="sendMessage()">Send</button>
+    </div>
+
+    <div class="col-md-10 ">
+
+
+      <div class="card " style="height: 600px;  overflow: scroll;">
+        <div class="card-header">
+          Chat room topic is : {{topic}}
+        </div>
+
+
+        <div class="card-body">
+
+          <ul class="list-group list-group-flush" *ngFor="let message of messages">
+            <li class="list-group-item">{{message}}</li>
+
+          </ul>
+
+
+        </div>
+
+
+      </div>
+
+
+
+      <input [(ngModel)]="message" (keyup)="$event.keyCode == 13 && sendMessage()" />
+      <button (click)="sendMessage(message)">Send</button>
+      <button (click)="  getTopic(myI)">getTopic</button>
+
+    </div>
+
+
+
+    <div class="col">
+
+    </div>
+  </div>
+</div>
